@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>البنديرة - إدارة الطلبات</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f5f6f8;
+      color: #222;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 22px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 25px;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      color: #d1d5db;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 25px auto;
+      padding: 15px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    input, select {
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #111827;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 9px;
+      background: #111827;
+      color: white;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1f2937;
+    }
+
+    .results {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .result {
+      background: #f9fafb;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .result span {
+      display: block;
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 5px;
+    }
+
+    .result strong {
+      font-size: 20px;
+    }
+
+    .profit {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+    }
+
+    .vat {
+      background: #fff7ed;
+      border-color: #fed7aa;
+    }
+
+    .note {
+      text-align: center;
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 650px) {
+      .grid,
+      .results {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>البنديرة للملبوسات الخليجية</h1>
+  <p>نظام إدارة طلبات الثياب - النسخة التجريبية</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+
+    <h2>إضافة طلب جديد</h2>
+
+    <div class="grid">
+
+      <div class="field">
+        <label>رقم الفاتورة</label>
+        <input type="text" id="invoice" placeholder="مثال: 1055">
+      </div>
+
+      <div class="field">
+        <label>الفرع</label>
+        <select id="branch">
+          <option>الفرع الرئيسي</option>
+          <option>الفرع الثاني</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>اسم المستر</label>
+        <input type="text" id="master" placeholder="اسم المستر">
+      </div>
+
+      <div class="field">
+        <label>اسم العميل</label>
+        <input type="text" id="customer" placeholder="اسم العميل">
+      </div>
+
+      <div class="field">
+        <label>رقم العميل</label>
+        <input type="tel" id="phone" placeholder="05XXXXXXXX">
+      </div>
+
+      <div class="field">
+        <label>القماش المستخدم بالمتر</label>
+        <input type="number" step="0.01" id="meters" placeholder="3.5">
+      </div>
+
+      <div class="field">
+        <label>تكلفة المتر</label>
+        <input type="number" step="0.01" id="meterPrice" placeholder="30">
+      </div>
+
+      <div class="field">
+        <label>تكلفة الخياطة</label>
+        <input type="number" step="0.01" id="tailoring" placeholder="25">
+      </div>
+
+      <div class="field">
+        <label>سعر البيع شامل الضريبة</label>
+        <input type="number" step="0.01" id="salePrice" placeholder="210">
+      </div>
+
+      <div class="field">
+        <label>طريقة الدفع</label>
+        <select id="payment">
+          <option>كاش</option>
+          <option>بطاقة</option>
+          <option>تحويل بنكي</option>
+        </select>
+      </div>
+
+    </div>
+
+    <button onclick="calculateOrder()">حساب الطلب</button>
+
+  </div>
+
+  <div class="card">
+
+    <h2>نتيجة الطلب</h2>
+
+    <div class="results">
+
+      <div class="result">
+        <span>تكلفة القماش</span>
+        <strong id="fabricCost">0.00 درهم</strong>
+      </div>
+
+      <div class="result">
+        <span>تكلفة الخياطة</span>
+        <strong id="tailoringCost">0.00 درهم</strong>
+      </div>
+
+      <div class="result">
+        <span>إجمالي التكلفة</span>
+        <strong id="totalCost">0.00 درهم</strong>
+      </div>
+
+      <div class="result">
+        <span>السعر قبل الضريبة</span>
+        <strong id="beforeVat">0.00 درهم</strong>
+      </div>
+
+      <div class="result vat">
+        <span>ضريبة VAT 5%</span>
+        <strong id="vatAmount">0.00 درهم</strong>
+      </div>
+
+      <div class="result">
+        <span>السعر النهائي</span>
+        <strong id="finalPrice">0.00 درهم</strong>
+      </div>
+
+      <div class="result profit">
+        <span>الربح التقريبي</span>
+        <strong id="profit">0.00 درهم</strong>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="note">
+    نسخة تجريبية أولية - سيتم لاحقًا ربط النظام بقاعدة البيانات وإضافة التقارير والإدارة.
+  </div>
+
+</div>
+
+<script>
+
+function money(value) {
+  return Number(value).toFixed(2) + " درهم";
+}
+
+function calculateOrder() {
+
+  const meters =
+    parseFloat(document.getElementById("meters").value) || 0;
+
+  const meterPrice =
+    parseFloat(document.getElementById("meterPrice").value) || 0;
+
+  const tailoring =
+    parseFloat(document.getElementById("tailoring").value) || 0;
+
+  const salePrice =
+    parseFloat(document.getElementById("salePrice").value) || 0;
+
+
+  const fabricCost =
+    meters * meterPrice;
+
+  const totalCost =
+    fabricCost + tailoring;
+
+  const beforeVat =
+    salePrice / 1.05;
+
+  const vatAmount =
+    salePrice - beforeVat;
+
+  const profit =
+    beforeVat - totalCost;
+
+
+  document.getElementById("fabricCost").innerText =
+    money(fabricCost);
+
+  document.getElementById("tailoringCost").innerText =
+    money(tailoring);
+
+  document.getElementById("totalCost").innerText =
+    money(totalCost);
+
+  document.getElementById("beforeVat").innerText =
+    money(beforeVat);
+
+  document.getElementById("vatAmount").innerText =
+    money(vatAmount);
+
+  document.getElementById("finalPrice").innerText =
+    money(salePrice);
+
+  document.getElementById("profit").innerText =
+    money(profit);
+}
+
+</script>
+
+</body>
+</html>
